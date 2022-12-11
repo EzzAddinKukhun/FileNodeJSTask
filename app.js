@@ -1,6 +1,7 @@
 const fs = require('fs');
 var readData = [];
-var contentToWrite;
+let object="";
+let contentToWrite = ""; 
 
 function convertToJSON(sourceFileName, destinationFileName, callback) {
     fs.readFile(sourceFileName, 'utf8', (err, data) => {
@@ -24,24 +25,28 @@ function convertToJSON(sourceFileName, destinationFileName, callback) {
 
 convertToJSON("users.csv","JSON.txt" , (data)=>{
     readData = data.split('\n');
+    let metaData = readData[0].split(", ");// GET THE METADATA LINE
+
     for (let i = 1; i < readData.length; i++) {
         let personData = [];
         var index = 0;
         personData = readData[i].split(", ");
-        contentToWrite = `{
-            username: ${personData[index]} , 
-            birthdate: ${personData[index + 1]} , 
-            address:  ${personData[index + 2]}, 
-            mobile_number:  ${personData[index + 3]}, 
-            gender:  ${personData[index + 4]}
-        } 
-        `;
+
+        object += "{ \n"
+        personData.map((element,key)=>{
+           object += metaData[key]+":"+element+",\n"; 
+        });
+        object += "}\n";
+        contentToWrite += object;  
+        object = ""; 
+    }
+
         fs.appendFile('JSON.txt', "[" + contentToWrite + "]", (err) => {
             if (err) {
                 console.error(err);
             }
         });
-    }}); 
+    }); 
 
 
 
